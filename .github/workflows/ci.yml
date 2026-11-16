@@ -1,0 +1,43 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-and-test:
+    name: Code Quality & Automated Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: "pip"
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Code Quality & Syntax Checks (Flake8)
+      run: |
+        # Stop build if there are critical Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Non-blocking style advisory
+        flake8 . --count --exit-zero --max-complexity=15 --statistics
+
+    - name: Run Unit Tests (Pytest)
+      run: |
+        pytest tests/ -v
+
+    - name: Build Docker Container (Image Smoke Test)
+      run: |
+        docker build -t suryahanuman/phishing-url-detector:latest .

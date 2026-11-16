@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov/
+venv/
+env/
+.env
+.terraform/
+*.tfstate*
+*.log

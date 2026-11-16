@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phishing-detector-service
+  labels:
+    app: phishing-detector
+spec:
+  type: ClusterIP
+  selector:
+    app: phishing-detector
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 8000

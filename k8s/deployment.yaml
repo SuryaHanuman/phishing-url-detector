@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phishing-detector-deployment
+  labels:
+    app: phishing-detector
+    tier: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: phishing-detector
+  template:
+    metadata:
+      labels:
+        app: phishing-detector
+    spec:
+      containers:
+      - name: phishing-detector
+        image: suryahanuman/phishing-url-detector:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "from url_analyzer import URLAnalyzer; exit(0)"
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
